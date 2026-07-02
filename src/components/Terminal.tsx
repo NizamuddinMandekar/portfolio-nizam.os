@@ -197,9 +197,9 @@ export default function Terminal() {
             typingRef.current = false;
             sound.enter();
             execute(cmd);
-          }, 140);
+          }, 250);
         }
-      }, 30);
+      }, 75);
     },
     [execute]
   );
