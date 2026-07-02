@@ -439,7 +439,7 @@ export function runCommand(raw: string): CommandResult {
       return {
         output: (
           <Line>
-            PONG <Dim>time=0.042ms — reflexes of a production API</Dim>
+            PONG <Dim>time=0.042ms reflexes of a production API</Dim>
           </Line>
         ),
       };

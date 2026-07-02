@@ -1,4 +1,4 @@
-# NIZAM.OS — Terminal Portfolio
+# NIZAM.OS Terminal Portfolio
 
 > The interactive terminal-OS portfolio of **Nizamuddin Mandekar**, AI Engineer.
 
@@ -6,7 +6,7 @@
 
 ![NIZAM.OS preview](public/og.png)
 
-Boot the OS, log in as root, and explore my work the way engineers do — through a shell.
+Boot the OS, log in as root, and explore my work the way engineers do through a shell.
 
 ## Try these commands
 
@@ -25,12 +25,12 @@ There's also a Konami code. You know what to do.
 
 ## Stack
 
-- **React 18 + TypeScript + Vite** — no template, every component handwritten
-- **Tailwind CSS v4** — CRT theme with scanlines, vignette, phosphor glow
-- **Framer Motion** — window/boot animations
-- **Canvas** — matrix rain background
-- **WebAudio** — synthesized key clicks (no audio files)
-- **PWA** — installable, works offline
+- **React 18 + TypeScript + Vite** no template, every component handwritten
+- **Tailwind CSS v4** CRT theme with scanlines, vignette, phosphor glow
+- **Framer Motion** window/boot animations
+- **Canvas** matrix rain background
+- **WebAudio** synthesized key clicks (no audio files)
+- **PWA** installable, works offline
 - Deployed via **GitHub Actions → GitHub Pages**
 
 ## Run locally
@@ -44,7 +44,7 @@ npm run dev
 
 By default `chat` uses local rules. To upgrade it to a live model:
 
-1. Deploy `worker/chat-proxy.js` to Cloudflare Workers (free) — instructions are in the file
+1. Deploy `worker/chat-proxy.js` to Cloudflare Workers (free) instructions are in the file
 2. Build with `VITE_CHAT_PROXY=https://your-worker.workers.dev`
 
 The client automatically falls back to local rules if the proxy is unreachable.
@@ -58,7 +58,7 @@ The client automatically falls back to local rules if the proxy is unreachable.
 
 ## About me
 
-AI Engineer — LLM applications, RAG systems, published AI research.
+AI Engineer LLM applications, RAG systems, published AI research.
 
 - 📧 nizamuddin.mandekar@gmail.com
 - 💼 [linkedin.com/in/nizamuddinmandekar](https://linkedin.com/in/nizamuddinmandekar)

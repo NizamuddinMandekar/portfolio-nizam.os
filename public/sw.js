@@ -1,4 +1,4 @@
-// NIZAM.OS service worker — network-first with offline cache fallback.
+// NIZAM.OS service worker network-first with offline cache fallback.
 const CACHE = "nizamos-v1";
 
 self.addEventListener("install", (e) => {

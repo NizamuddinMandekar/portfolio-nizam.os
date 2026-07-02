@@ -71,7 +71,7 @@ export default function App() {
 
       {godMode && (
         <div className="god-toast fixed top-20 left-1/2 -translate-x-1/2 z-[70] border border-phos/60 bg-crt/95 px-6 py-3 text-phos glow text-lg">
-          ⬆⬆⬇⬇⬅➡⬅➡BA — GOD MODE UNLOCKED
+          ⬆⬆⬇⬇⬅➡⬅➡BA GOD MODE UNLOCKED
         </div>
       )}
 

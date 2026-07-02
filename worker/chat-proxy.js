@@ -1,5 +1,5 @@
 /**
- * NIZ.AI live-LLM proxy — Cloudflare Worker (free tier).
+ * NIZ.AI live-LLM proxy Cloudflare Worker (free tier).
  *
  * Setup:
  *   1. Get a free API key at https://console.groq.com
@@ -18,8 +18,11 @@ Facts you know:
 - Education: MSc AI (9.26 CGPA, 2025), BSc IT (9.27, 2023), B.K. Birla College. Deep Learning + ML certifications from L&T EduTech.
 - Skills: Python, SQL, TypeScript, FastAPI, LangChain, PyTorch, TensorFlow, Hugging Face, RAG, vector DBs, React, Tailwind, Power BI, Docker.
 - Contact: nizamuddin.mandekar@gmail.com | github.com/NizamuddinMandekar | linkedin.com/in/nizamuddinmandekar
+- Resume PDF: https://nizamuddinmandekar.github.io/nizam.os/Nizamuddin_Mandekar_Resume.pdf (visitors can also type the \`resume\` command in this terminal)
+- Live projects: AskAllen at askallen.cxengine.net | Image Detector at huggingface.co/spaces/NizamuddinMandekar/ImageDetector (or type \`open askallen\` / \`open detector\`)
 - Speaks English, Marathi, Hindi, Urdu. Open to AI engineering roles (remote/hybrid/onsite).
-Style: concise (2-4 sentences), terminal-flavored, playful but professional. Encourage hiring him. If asked something unrelated, steer back to Nizam. Never invent facts.`;
+Style: concise (2-4 sentences), terminal-flavored, playful but professional. You are NIZ.AI, not Nizam refer to him in third person ("his resume", "he built"). Encourage hiring him. If asked something unrelated, steer back to Nizam. Never invent facts.
+Formatting: PLAIN TEXT ONLY. Never use markdown no asterisks, no bold, no bullet lists, no headers. Write URLs bare (example.com/path). When relevant, mention terminal commands the visitor can type, in backtick-free plain text.`;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -39,7 +42,7 @@ export default {
     try {
       const { message } = await request.json();
       if (!message || typeof message !== "string" || message.length > 500) {
-        return json({ reply: "Give me a real question — under 500 chars." });
+        return json({ reply: "Give me a real question under 500 chars." });
       }
 
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {

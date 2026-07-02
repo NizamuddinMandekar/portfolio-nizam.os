@@ -1,4 +1,4 @@
-// Tiny WebAudio synth for terminal sounds — no audio assets needed.
+// Tiny WebAudio synth for terminal sounds no audio assets needed.
 
 let ctx: AudioContext | null = null;
 let muted = localStorage.getItem("nizamos-sound") === "off";
