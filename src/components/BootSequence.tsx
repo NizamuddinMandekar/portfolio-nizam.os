@@ -30,16 +30,23 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
     return () => clearInterval(interval);
   }, []);
 
-  // finish once every line is on screen, however we got there
+  // once every line is on screen, wait for a key/tap to enter
+  const ready = visible >= BOOT_LINES.length;
   useEffect(() => {
-    if (visible < BOOT_LINES.length || doneRef.current) return;
-    doneRef.current = true;
-    const t = setTimeout(() => {
+    if (!ready) return;
+    const enter = () => {
+      if (doneRef.current) return;
+      doneRef.current = true;
       setFinished(true);
       onDone();
-    }, 400);
-    return () => clearTimeout(t);
-  }, [visible, onDone]);
+    };
+    window.addEventListener("keydown", enter);
+    window.addEventListener("pointerdown", enter);
+    return () => {
+      window.removeEventListener("keydown", enter);
+      window.removeEventListener("pointerdown", enter);
+    };
+  }, [ready, onDone]);
 
   return (
     <AnimatePresence>
@@ -57,6 +64,16 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
               </p>
             ))}
             {visible < BOOT_LINES.length && <span className="cursor-block" />}
+            {ready && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                className="text-cyanx mt-6"
+              >
+                press any key to enter…
+              </motion.p>
+            )}
           </div>
         </motion.div>
       )}
