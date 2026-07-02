@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { Github, Linkedin, Mail } from "lucide-react";
 import { profile } from "../data/portfolio";
+import { heartbeat } from "../terminal/social";
 
 export default function TopBar() {
   const [time, setTime] = useState(() => new Date());
+  const [online, setOnline] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const beat = () => heartbeat().then((n) => n !== null && setOnline(n));
+    beat();
+    const t = setInterval(beat, 60000);
     return () => clearInterval(t);
   }, []);
 
@@ -45,6 +54,11 @@ export default function TopBar() {
           >
             <Mail className="w-6 h-6" />
           </a>
+          {online !== null && (
+            <span className="text-faint border-l border-linex pl-3 hidden md:inline">
+              <span className="text-phos glow">●</span> {online} online
+            </span>
+          )}
           <span className="text-faint border-l border-linex pl-3 tabular-nums hidden sm:inline">
             {time.toLocaleTimeString("en-IN", { hour12: false })}
           </span>

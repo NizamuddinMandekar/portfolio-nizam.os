@@ -65,6 +65,14 @@ export default function Terminal() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const tourTimer = useRef<number | null>(null);
+
+  const stopTour = () => {
+    if (tourTimer.current !== null) {
+      clearInterval(tourTimer.current);
+      tourTimer.current = null;
+    }
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -122,11 +130,24 @@ export default function Terminal() {
         if (result.enterChat) setChatMode(true);
         if (result.clear) {
           setHistory([]);
-        } else {
+        } else if (result.output !== null || trimmed) {
           setHistory((h) => [
             ...h,
             { id: entryId++, command: trimmed, output: result.output },
           ]);
+        }
+        if (result.tour) {
+          const queue = [...result.tour];
+          stopTour();
+          tourTimer.current = window.setInterval(() => {
+            const next = queue.shift();
+            if (!next) {
+              stopTour();
+              return;
+            }
+            const r = runCommand(next);
+            setHistory((h) => [...h, { id: entryId++, command: next, output: r.output }]);
+          }, 2400);
         }
       }
 
@@ -157,6 +178,7 @@ export default function Terminal() {
   }, [execute]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    stopTour(); // any manual input takes the wheel back
     if (e.key.length === 1 || e.key === "Backspace") {
       sound.key();
     }
@@ -255,6 +277,7 @@ export default function Terminal() {
             type="button"
             onClick={(e) => {
               e.stopPropagation();
+              stopTour();
               execute(c);
               inputRef.current?.focus();
             }}

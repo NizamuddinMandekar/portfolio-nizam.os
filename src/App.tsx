@@ -14,6 +14,23 @@ const KONAMI = [
 export default function App() {
   const [booted, setBooted] = useState(false);
   const [godMode, setGodMode] = useState(false);
+  const [glitching, setGlitching] = useState(false);
+  const [shutdown, setShutdown] = useState(false);
+
+  // glitch + shutdown command effects
+  useEffect(() => {
+    const onGlitch = () => {
+      setGlitching(true);
+      setTimeout(() => setGlitching(false), 2000);
+    };
+    const onShutdown = () => setShutdown(true);
+    window.addEventListener("nizamos:glitch", onGlitch);
+    window.addEventListener("nizamos:shutdown", onShutdown);
+    return () => {
+      window.removeEventListener("nizamos:glitch", onGlitch);
+      window.removeEventListener("nizamos:shutdown", onShutdown);
+    };
+  }, []);
 
   // konami code → god mode: matrix takeover + toast
   useEffect(() => {
@@ -37,7 +54,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative h-dvh flex flex-col overflow-hidden crt-flicker">
+    <div className={`relative h-dvh flex flex-col overflow-hidden crt-flicker ${glitching ? "glitch-fx" : ""}`}>
       <MatrixRain />
 
       <BootSequence onDone={() => setBooted(true)} />
@@ -73,6 +90,20 @@ export default function App() {
         <div className="god-toast fixed top-20 left-1/2 -translate-x-1/2 z-[70] border border-phos/60 bg-crt/95 px-6 py-3 text-phos glow text-lg">
           ⬆⬆⬇⬇⬅➡⬅➡BA GOD MODE UNLOCKED
         </div>
+      )}
+
+      {shutdown && (
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="fixed inset-0 z-[90] bg-black flex flex-col items-center justify-center cursor-pointer"
+          aria-label="System halted. Click to reboot."
+        >
+          <div className="crt-off-line" />
+          <p className="crt-off-text font-mono text-faint text-sm mt-8">
+            SYSTEM HALTED · click anywhere to reboot
+          </p>
+        </button>
       )}
 
       {/* CRT effects */}

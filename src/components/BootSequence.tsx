@@ -18,6 +18,13 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
   const [visible, setVisible] = useState(0);
   const [finished, setFinished] = useState(false);
 
+  // pressing keys during boot speeds it up, hacker style
+  useEffect(() => {
+    const onKey = () => setVisible((v) => Math.min(v + 1, BOOT_LINES.length));
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
@@ -57,6 +64,9 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
               </p>
             ))}
             {visible < BOOT_LINES.length && <span className="cursor-block" />}
+            {visible < BOOT_LINES.length - 2 && (
+              <p className="text-faint text-xs mt-4">press any key to boot faster…</p>
+            )}
           </div>
         </motion.div>
       )}

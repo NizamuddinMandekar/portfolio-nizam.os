@@ -129,6 +129,22 @@ export const publications = [
   },
 ];
 
+// Replace these with real quotes from colleagues/managers when you have them.
+export const testimonials = [
+  {
+    quote:
+      "Nizam took our review-analytics idea from whiteboard to production pipeline faster than we planned for. The LLM auto-replies just work.",
+    author: "Team Lead",
+    org: "AutomateBuddy Technologies",
+  },
+  {
+    quote:
+      "Handled a citizen-facing multilingual system with real deadlines and real users. Dependable under pressure.",
+    author: "Project Manager",
+    org: "SAAR IT Resources",
+  },
+];
+
 export const education = [
   {
     degree: "MSc, Artificial Intelligence",

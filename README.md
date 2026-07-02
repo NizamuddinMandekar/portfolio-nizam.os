@@ -15,6 +15,13 @@ Boot the OS, log in as root, and explore my work the way engineers do through a 
 | `help` | list everything |
 | `about` / `projects` / `experience` / `skills` / `research` | my work, rendered as terminal output |
 | `chat` | talk to **NIZ.AI**, a simulated me |
+| `tour` | sit back — the terminal drives itself |
+| `ls` / `cd projects` / `cat askallen.md` | browse my work as a filesystem |
+| `projects \| grep rag` | yes, piping works |
+| `posts` / `read rag-at-scale` | my blog, in the terminal |
+| `stats` | live GitHub stats |
+| `sign hello from berlin` | leave a message in the guestbook |
+| `glitch` / `shutdown` | do not run these |
 | `open askallen` | jump straight to a live project |
 | `theme cyan` | switch the phosphor color (green / cyan / amber) |
 | `matrix` | follow the white rabbit |

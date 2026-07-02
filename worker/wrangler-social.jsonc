@@ -1,0 +1,11 @@
+{
+  "name": "nizamos-social",
+  "main": "social.js",
+  "compatibility_date": "2026-07-01",
+  "kv_namespaces": [
+    {
+      "binding": "SOCIAL",
+      "id": "36342821856046fc9e26575ac9f94308"
+    }
+  ]
+}

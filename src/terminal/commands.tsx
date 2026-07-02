@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
+import GitHubStats from "../components/GitHubStats";
+import { GuestbookList, SignResult } from "../components/Guestbook";
 import RotatingGreeting from "../components/RotatingGreeting";
+import { posts } from "../data/posts";
+import * as vfs from "./fs";
 import { sound } from "./sound";
 import {
   education,
@@ -9,12 +13,14 @@ import {
   publications,
   skillGroups,
   stats,
+  testimonials,
 } from "../data/portfolio";
 
 export interface CommandResult {
   output: ReactNode;
   clear?: boolean;
   enterChat?: boolean;
+  tour?: string[];
 }
 
 const Line = ({ children }: { children: ReactNode }) => (
@@ -86,14 +92,20 @@ const COMMAND_LIST: [string, string][] = [
   ["research", "published papers"],
   ["education", "degrees & certifications"],
   ["chat", "talk to NIZ.AI a simulated me"],
+  ["tour", "sit back — auto-guided walkthrough"],
+  ["posts", "read my blog posts"],
+  ["stats", "live GitHub stats"],
+  ["testimonials", "what people say"],
+  ["guestbook", "see visitor messages · sign <msg> to add yours"],
   ["contact", "reach out / hire"],
   ["resume", "open resume PDF"],
   ["neofetch", "system info card"],
   ["open", "open a project: open askallen | detector"],
+  ["ls", "browse the filesystem · cd <dir> · cat <file>"],
   ["theme", "switch color: green | cyan | amber"],
   ["sound", "toggle sfx: sound on | off"],
   ["matrix", "follow the white rabbit"],
-  ["history", "your recent commands"],
+  ["glitch", "do not run this"],
   ["clear", "wipe the screen"],
 ];
 
@@ -104,18 +116,81 @@ export const KNOWN_COMMANDS = [
   "banner",
   "socials",
   "hire",
-  "ls",
   "sudo",
-  "chat",
   "exit",
   "date",
   "uptime",
   "ping",
   "echo",
+  "cd",
+  "cat",
+  "pwd",
+  "read",
+  "sign",
+  "history",
+  "ascii",
+  "shutdown",
 ];
+
+// plain-text projections used by `| grep`
+function textLines(cmd: string): string[] | null {
+  switch (cmd) {
+    case "projects":
+      return projects.map(
+        (p) => `${p.title} — ${p.subtitle} :: ${p.tags.join(", ")}`
+      );
+    case "skills":
+      return skillGroups.flatMap((g) => g.skills.map((s) => `${g.title} :: ${s}`));
+    case "experience":
+      return experience.flatMap((j) => j.points.map((pt) => `${j.company} :: ${pt}`));
+    case "posts":
+      return posts.map((p) => `${p.slug} — ${p.title}`);
+    case "help":
+    case "ls":
+      return COMMAND_LIST.map(([c, d]) => `${c} — ${d}`);
+    default:
+      return null;
+  }
+}
 
 export function runCommand(raw: string): CommandResult {
   const input = raw.trim().toLowerCase();
+
+  // piping: `<cmd> | grep <term>`
+  const pipeMatch = input.match(/^([a-z]+)\s*\|\s*grep\s+(.+)$/);
+  if (pipeMatch) {
+    const [, srcCmd, term] = pipeMatch;
+    const lines = textLines(srcCmd);
+    if (!lines) {
+      return {
+        output: (
+          <Line>
+            <Dim>piping is supported for:</Dim>{" "}
+            <Key>projects | skills | experience | posts | help</Key>
+          </Line>
+        ),
+      };
+    }
+    const hits = lines.filter((l) => l.toLowerCase().includes(term));
+    return {
+      output: (
+        <div>
+          {hits.length === 0 ? (
+            <Line>
+              <Dim>grep: no matches for "{term}"</Dim>
+            </Line>
+          ) : (
+            hits.map((l, i) => (
+              <Line key={i}>
+                <span className="text-phos-dim">{l}</span>
+              </Line>
+            ))
+          )}
+        </div>
+      ),
+    };
+  }
+
   const [cmd, ...args] = input.split(/\s+/);
 
   switch (cmd) {
@@ -123,12 +198,11 @@ export function runCommand(raw: string): CommandResult {
       return { output: null };
 
     case "help":
-    case "ls":
       return {
         output: (
           <div>
             <Line>
-              <Dim>available commands:</Dim>
+              <Dim>available commands (pro tip: try `projects | grep rag`):</Dim>
             </Line>
             {COMMAND_LIST.map(([c, desc]) => (
               <Line key={c}>
@@ -138,6 +212,206 @@ export function runCommand(raw: string): CommandResult {
           </div>
         ),
       };
+
+    case "ls": {
+      const listing = vfs.ls();
+      if (!listing) return { output: <Line><Dim>ls: cannot read directory</Dim></Line> };
+      return {
+        output: (
+          <div>
+            <Line>
+              <Dim>{vfs.pwd()}</Dim>
+            </Line>
+            <div className="flex flex-wrap gap-x-6 gap-y-1">
+              {listing.dirs.map((d) => (
+                <span key={d} className="text-cyanx">
+                  {d}/
+                </span>
+              ))}
+              {listing.files.map((f) => (
+                <span key={f} className="text-phos-dim">
+                  {f}
+                </span>
+              ))}
+            </div>
+            <Line>
+              <Dim>
+                navigate: <Key>cd &lt;dir&gt;</Key> · read: <Key>cat &lt;file&gt;</Key>
+              </Dim>
+            </Line>
+          </div>
+        ),
+      };
+    }
+
+    case "cd": {
+      const err = vfs.cd(args[0] ?? "");
+      return {
+        output: err ? (
+          <Line>
+            <span className="text-alert">{err}</span>
+          </Line>
+        ) : (
+          <Line>
+            <Dim>{vfs.pwd()}</Dim>
+          </Line>
+        ),
+      };
+    }
+
+    case "pwd":
+      return { output: <Line><Key>{vfs.pwd()}</Key></Line> };
+
+    case "cat": {
+      const r = vfs.cat(args[0] ?? "");
+      if (r.error)
+        return {
+          output: (
+            <Line>
+              <span className="text-alert">{r.error}</span>
+            </Line>
+          ),
+        };
+      return {
+        output: (
+          <pre className="whitespace-pre-wrap text-phos-dim leading-relaxed">{r.content}</pre>
+        ),
+      };
+    }
+
+    case "tour":
+      return {
+        tour: ["about", "projects", "experience", "skills", "research", "contact"],
+        output: (
+          <Line>
+            <span className="text-phos glow">auto-tour engaged.</span>{" "}
+            <Dim>sit back — I'll drive. type anything to take the wheel.</Dim>
+          </Line>
+        ),
+      };
+
+    case "posts":
+      return {
+        output: (
+          <div className="space-y-1">
+            <Line>
+              <Dim>~/blog — {posts.length} posts · read with</Dim> <Key>read &lt;slug&gt;</Key>
+            </Line>
+            {posts.map((p) => (
+              <Line key={p.slug}>
+                <Key>{p.slug.padEnd(26)}</Key>{" "}
+                <span className="text-phos-dim">{p.title}</span>{" "}
+                <Dim>
+                  · {p.date} · {p.minutes} min
+                </Dim>
+              </Line>
+            ))}
+          </div>
+        ),
+      };
+
+    case "read": {
+      const post = posts.find((p) => p.slug === args[0]);
+      if (!post)
+        return {
+          output: (
+            <Line>
+              <span className="text-alert">read: unknown post.</span>{" "}
+              <Dim>
+                try: {posts.map((p) => p.slug).join(" | ")}
+              </Dim>
+            </Line>
+          ),
+        };
+      return {
+        output: (
+          <div className="max-w-2xl space-y-3">
+            <div>
+              <Line>
+                <span className="text-phos glow">{post.title}</span>
+              </Line>
+              <Line>
+                <Dim>
+                  {post.date} · {post.minutes} min read
+                </Dim>
+              </Line>
+            </div>
+            {post.body.map((para, i) => (
+              <p key={i} className="text-phos-dim leading-relaxed">
+                {para}
+              </p>
+            ))}
+          </div>
+        ),
+      };
+    }
+
+    case "stats":
+      return { output: <GitHubStats /> };
+
+    case "testimonials":
+      return {
+        output: (
+          <div className="space-y-3">
+            {testimonials.map((t) => (
+              <div key={t.quote} className="border-l-2 border-cyanx/40 pl-4">
+                <p className="text-phos-dim leading-relaxed">"{t.quote}"</p>
+                <Line>
+                  <Key>— {t.author}</Key> <Dim>· {t.org}</Dim>
+                </Line>
+              </div>
+            ))}
+          </div>
+        ),
+      };
+
+    case "sign": {
+      const msg = raw.trim().slice(5).trim();
+      if (msg.length < 2)
+        return {
+          output: (
+            <Line>
+              usage: <Key>sign &lt;your message&gt;</Key>{" "}
+              <Dim>(max 140 chars, visible to everyone)</Dim>
+            </Line>
+          ),
+        };
+      return { output: <SignResult message={msg} /> };
+    }
+
+    case "guestbook":
+      return { output: <GuestbookList /> };
+
+    case "ascii":
+      return {
+        output: (
+          <pre className="text-cyanx glow-cyan text-[9px] sm:text-xs leading-[1.2] whitespace-pre overflow-x-auto">
+            {String.raw`
+    _   _______ ____  ___    __  ___
+   / | / /  _/ /_  / /   |  /  |/  /
+  /  |/ // /    / / / /| | / /|_/ /
+ / /|  // /    / /_/ ___ |/ /  / /
+/_/ |_/___/   /___/_/  |_/_/  /_/
+        [ AI ENGINEER · EST. 2023 ]
+`}
+          </pre>
+        ),
+      };
+
+    case "glitch":
+      window.dispatchEvent(new CustomEvent("nizamos:glitch"));
+      return {
+        output: (
+          <Line>
+            <span className="text-alert">warning: reality integrity compromised</span>{" "}
+            <Dim>… restoring in 2s</Dim>
+          </Line>
+        ),
+      };
+
+    case "shutdown":
+      window.dispatchEvent(new CustomEvent("nizamos:shutdown"));
+      return { output: null };
 
     case "about":
     case "whoami":
