@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const BOOT_LINES = [
   "NIZAM.OS v2.6 bootloader",
@@ -17,36 +17,35 @@ const BOOT_LINES = [
 export default function BootSequence({ onDone }: { onDone: () => void }) {
   const [visible, setVisible] = useState(0);
   const [finished, setFinished] = useState(false);
+  const doneRef = useRef(false);
 
-  // pressing keys during boot speeds it up, hacker style
+  // timer + keypress both advance the same counter
   useEffect(() => {
-    const onKey = () => setVisible((v) => Math.min(v + 1, BOOT_LINES.length));
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setFinished(true);
-      onDone();
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisible(BOOT_LINES.length);
       return;
     }
-    const interval = setInterval(() => {
-      setVisible((v) => {
-        if (v >= BOOT_LINES.length) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setFinished(true);
-            onDone();
-          }, 500);
-          return v;
-        }
-        return v + 1;
-      });
-    }, 240);
-    return () => clearInterval(interval);
-  }, [onDone]);
+    const advance = () => setVisible((v) => Math.min(v + 1, BOOT_LINES.length));
+    const interval = setInterval(advance, 240);
+    window.addEventListener("keydown", advance);
+    window.addEventListener("pointerdown", advance);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("keydown", advance);
+      window.removeEventListener("pointerdown", advance);
+    };
+  }, []);
+
+  // finish once every line is on screen, however we got there
+  useEffect(() => {
+    if (visible < BOOT_LINES.length || doneRef.current) return;
+    doneRef.current = true;
+    const t = setTimeout(() => {
+      setFinished(true);
+      onDone();
+    }, 400);
+    return () => clearTimeout(t);
+  }, [visible, onDone]);
 
   return (
     <AnimatePresence>
@@ -65,7 +64,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
             ))}
             {visible < BOOT_LINES.length && <span className="cursor-block" />}
             {visible < BOOT_LINES.length - 2 && (
-              <p className="text-faint text-xs mt-4">press any key to boot faster…</p>
+              <p className="text-faint text-xs mt-4">press any key (or tap) to boot faster…</p>
             )}
           </div>
         </motion.div>
