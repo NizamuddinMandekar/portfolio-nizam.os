@@ -52,7 +52,7 @@ export const ASCII_BANNER = String.raw`
 export function welcomeOutput(): ReactNode {
   return (
     <div>
-      <pre className="text-phos-dim text-[7px] min-[420px]:text-[9px] sm:text-[11px] md:text-sm leading-[1.2] whitespace-pre overflow-x-auto pb-1 [text-shadow:0_0_10px_rgba(46,232,138,0.25)]">
+      <pre className="text-phos-dim text-[6px] min-[420px]:text-[8px] sm:text-[9px] md:text-[11px] leading-[1.2] whitespace-pre overflow-x-auto pb-1 [text-shadow:0_0_10px_rgba(46,232,138,0.25)]">
         {ASCII_BANNER}
       </pre>
       <Line>

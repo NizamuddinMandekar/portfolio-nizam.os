@@ -39,6 +39,8 @@ html[data-theme="amber"] {
 
 html {
   scroll-behavior: smooth;
+  /* UI is designed to look right at ~80% zoom — bake that in */
+  font-size: 80%;
 }
 
 body {
