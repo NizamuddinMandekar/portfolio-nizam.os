@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import RotatingGreeting from "../components/RotatingGreeting";
 import Snake from "../components/Snake";
 import { sound } from "./sound";
 import {
@@ -49,15 +50,7 @@ export const ASCII_BANNER = String.raw`
 ╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝ ╚═════╝ ╚══════╝
 `;
 
-const GREETINGS = [
-  "Welcome.",
-  "स्वागत आहे.", // Marathi
-  "स्वागत है.", // Hindi
-  "خوش آمدید.", // Urdu
-];
-
 export function welcomeOutput(): ReactNode {
-  const greeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
   return (
     <div>
       <pre className="text-phos-dim text-[7px] min-[420px]:text-[9px] sm:text-[11px] md:text-sm leading-[1.2] whitespace-pre overflow-x-auto pb-1 [text-shadow:0_0_10px_rgba(46,232,138,0.25)]">
@@ -79,8 +72,8 @@ export function welcomeOutput(): ReactNode {
         <Dim>──────────────────────────────────────────────</Dim>
       </Line>
       <Line>
-        <span className="text-cyanx">{greeting}</span> Type <Key>help</Key> to list
-        commands, or click a command below.
+        <RotatingGreeting /> Type <Key>help</Key> to list commands, or click a
+        command below.
       </Line>
     </div>
   );
