@@ -11,6 +11,10 @@ const RULES: Rule[] = [
     replies: [
       "Hey! I'm NIZ.AI a simulated version of Nizamuddin. Ask me about his projects, skills, or how to hire him.",
       "Hello, human. I'm running on pure JavaScript and confidence. What do you want to know about Nizam?",
+      "Hey there! You've reached NIZ.AI zero GPUs, zero API costs, 100% enthusiasm. Ask me anything about Nizam.",
+      "Greetings! I'm what happens when an AI engineer builds a chatbot with no LLM budget. Ask me about Nizam's projects, skills, or how to hire him.",
+      "Yo! NIZ.AI online. I know everything about Nizam and nothing about anything else. Perfect balance. What's your question?",
+      "Salaam! I'm NIZ.AI, Nizam's smallest chatbot. His real ones search 43,000 resumes; I just answer questions about him. Fire away.",
     ],
   },
   {
@@ -40,7 +44,7 @@ const RULES: Rule[] = [
   {
     keywords: ["experience", "company", "current"],
     replies: [
-      "He's currently an AI Engineer at AutomateBuddy Technologies, before that Jr. AI Engineer at SAAR IT Resources where he worked on a government e-governance chatbot serving citizens in 3 languages. Type `experience` for details.",
+      "1.5+ years of hands-on AI engineering. Currently AI Engineer at AutomateBuddy Technologies, before that Jr. AI Engineer at SAAR IT Resources where he built a government e-governance chatbot serving citizens in 3 languages. Type `experience` for details.",
     ],
   },
   {
@@ -170,9 +174,31 @@ const RULES: Rule[] = [
     ],
   },
   {
+    keywords: ["ok", "okay", "okie", "alright", "hmm", "i see", "gotcha", "fair enough"],
+    replies: [
+      "\"okay\" the human equivalent of a 200 status code. Received. So, projects, skills, or hiring Nizam next?",
+      "Acknowledged. I'll idle here at 0% CPU while you think of your next question. Hint: `askallen` is a good one.",
+      "Cool cool. Fun fact while you decide: Nizam built a RAG system searching 43,000+ resumes. Ask me about it.",
+    ],
+  },
+  {
     keywords: ["thank", "thanks", "cool", "nice", "awesome", "great"],
     replies: [
       "Anytime. I'll be here, blinking in cyan. Type `exit` to leave chat, or keep asking.",
+    ],
+  },
+  {
+    keywords: ["yes", "yea", "yeah", "yep", "sure", "why not"],
+    replies: [
+      "Love the energy. So projects, skills, research, or straight to `hire`?",
+      "Excellent choice (whatever it was). Ask me about AskAllen, his RAG work, or how to reach him.",
+    ],
+  },
+  {
+    keywords: ["no", "nah", "nope", "not really"],
+    replies: [
+      "Fair enough. Counter-offer: ask me one thing about Nizam's projects, and if you're not impressed, `exit` is right there.",
+      "A person of few words. Respect. When you're ready: projects, skills, research, or `hire`.",
     ],
   },
   {
@@ -182,17 +208,28 @@ const RULES: Rule[] = [
 ];
 
 const FALLBACKS = [
-  "Hmm, that's outside my training data (which is one TypeScript file). Try asking about projects, skills, experience, or hiring Nizam.",
+  "Hmm, that one's above my pay grade (I work for free). But ask about Nizam's projects, skills, or hiring him and I'll shine.",
   "I could hallucinate an answer, but Nizam taught me better. Ask me about his work, stack, research, or availability.",
-  "404: wit not found. But I do know his projects, skills, and how to reach him ask away.",
+  "404: answer not found. 200: everything about Nizam. Try `askallen`, `skills`, or ask how to hire him.",
+  "My training covered exactly one topic: Nizam. Luckily he's interesting shipped RAG systems, published research, real users. Pick a thread.",
 ];
 
 let fallbackIndex = 0;
 
+// Short keywords match as whole words only (so "yo" ≠ "you", "ok" ≠ "joke"),
+// allowing a stretched last letter ("hii", "heyy", "byee"). Longer keywords
+// stay substring matches so prefixes like "opportunit" still work.
+function matchesKeyword(msg: string, keyword: string): boolean {
+  if (keyword.length <= 3) {
+    return new RegExp(`\\b${keyword}${keyword.slice(-1)}*\\b`).test(msg);
+  }
+  return msg.includes(keyword);
+}
+
 export function aiReply(message: string): string {
   const msg = message.toLowerCase();
   for (const rule of RULES) {
-    if (rule.keywords.some((k) => msg.includes(k))) {
+    if (rule.keywords.some((k) => matchesKeyword(msg, k))) {
       return rule.replies[Math.floor(Math.random() * rule.replies.length)];
     }
   }

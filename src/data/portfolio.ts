@@ -8,7 +8,7 @@ export const profile = {
   github: "https://github.com/NizamuddinMandekar",
   linkedin: "https://linkedin.com/in/nizamuddinmandekar",
   summary:
-    "AI Engineer experienced in building and deploying LLM-powered chatbots and machine learning applications. Skilled in Python, FastAPI, NLP, transformers, and RAG-based systems with public-sector delivery experience, including a multilingual e-governance chatbot for a government department, and a published research record in AI.",
+    "AI Engineer with 1.5+ years of experience building and deploying LLM-powered chatbots and machine learning applications. Skilled in Python, FastAPI, NLP, transformers, and RAG-based systems with public-sector delivery experience, including a multilingual e-governance chatbot for a government department, and a published research record in AI.",
 };
 
 export const stats = [

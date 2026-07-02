@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Snake from "../components/Snake";
 import { sound } from "./sound";
 import {
   education,
@@ -48,7 +49,15 @@ export const ASCII_BANNER = String.raw`
 ╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝ ╚═════╝ ╚══════╝
 `;
 
+const GREETINGS = [
+  "Welcome.",
+  "स्वागत आहे.", // Marathi
+  "स्वागत है.", // Hindi
+  "خوش آمدید.", // Urdu
+];
+
 export function welcomeOutput(): ReactNode {
+  const greeting = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
   return (
     <div>
       <pre className="text-phos-dim text-[7px] min-[420px]:text-[9px] sm:text-[11px] md:text-sm leading-[1.2] whitespace-pre overflow-x-auto pb-1 [text-shadow:0_0_10px_rgba(46,232,138,0.25)]">
@@ -70,7 +79,8 @@ export function welcomeOutput(): ReactNode {
         <Dim>──────────────────────────────────────────────</Dim>
       </Line>
       <Line>
-        Type <Key>help</Key> to list commands, or click a command below.
+        <span className="text-cyanx">{greeting}</span> Type <Key>help</Key> to list
+        commands, or click a command below.
       </Line>
     </div>
   );
@@ -87,9 +97,11 @@ const COMMAND_LIST: [string, string][] = [
   ["contact", "reach out / hire"],
   ["resume", "open resume PDF"],
   ["neofetch", "system info card"],
+  ["open", "open a project: open askallen | detector"],
   ["theme", "switch color: green | cyan | amber"],
   ["sound", "toggle sfx: sound on | off"],
   ["matrix", "follow the white rabbit"],
+  ["snake", "play snake in the terminal"],
   ["history", "your recent commands"],
   ["clear", "wipe the screen"],
 ];
@@ -105,6 +117,10 @@ export const KNOWN_COMMANDS = [
   "sudo",
   "chat",
   "exit",
+  "date",
+  "uptime",
+  "ping",
+  "echo",
 ];
 
 export function runCommand(raw: string): CommandResult {
@@ -361,6 +377,86 @@ export function runCommand(raw: string): CommandResult {
               <Line><Key>Memory:</Key> vector-indexed, semantic</Line>
             </div>
           </div>
+        ),
+      };
+
+    case "open": {
+      const targets: Record<string, { url: string; label: string }> = {
+        askallen: { url: "https://askallen.cxengine.net/", label: "AskAllen (live demo)" },
+        detector: {
+          url: "https://huggingface.co/spaces/NizamuddinMandekar/ImageDetector",
+          label: "AI Image Detector (Hugging Face)",
+        },
+        github: { url: profile.github, label: "GitHub profile" },
+        linkedin: { url: profile.linkedin, label: "LinkedIn profile" },
+        resume: {
+          url: `${import.meta.env.BASE_URL}Nizamuddin_Mandekar_Resume.pdf`,
+          label: "Resume PDF",
+        },
+      };
+      const key = args[0];
+      const target = key ? targets[key] : undefined;
+      if (!target) {
+        return {
+          output: (
+            <div>
+              <Line>
+                usage: <Key>open {Object.keys(targets).join(" | ")}</Key>
+              </Line>
+            </div>
+          ),
+        };
+      }
+      window.open(target.url, "_blank", "noopener");
+      return {
+        output: (
+          <Line>
+            opening <Key>{target.label}</Key> … <Link href={target.url}>direct link</Link>
+          </Line>
+        ),
+      };
+    }
+
+    case "snake":
+      return { output: <Snake /> };
+
+    case "date":
+      return {
+        output: (
+          <Line>
+            <Key>{new Date().toString()}</Key>
+          </Line>
+        ),
+      };
+
+    case "uptime": {
+      const years = new Date().getFullYear() - 2023;
+      const session = Math.round(performance.now() / 1000);
+      return {
+        output: (
+          <Line>
+            career uptime: <Key>{years}+ years in AI</Key>{" "}
+            <Dim>· this session: {session}s · zero crashes (in production, mostly)</Dim>
+          </Line>
+        ),
+      };
+    }
+
+    case "ping":
+      return {
+        output: (
+          <Line>
+            PONG <Dim>time=0.042ms — reflexes of a production API</Dim>
+          </Line>
+        ),
+      };
+
+    case "echo":
+      return {
+        output: raw.trim().slice(4).trim() ? (
+          <Line>{raw.trim().slice(4).trim()}</Line>
+        ) : (
+          <Line><Dim>echo what? give me words.</Dim></Line>
         ),
       };
 

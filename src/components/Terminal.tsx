@@ -8,9 +8,8 @@ import {
 } from "react";
 import { motion } from "framer-motion";
 import { KNOWN_COMMANDS, runCommand, welcomeOutput } from "../terminal/commands";
-import { aiReply } from "../terminal/chat";
 import { sound } from "../terminal/sound";
-import TypeWriter from "./TypeWriter";
+import AIReply from "./AIReply";
 
 interface HistoryEntry {
   id: number;
@@ -71,6 +70,13 @@ export default function Terminal() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [history]);
 
+  // snake (and other embeds) ask us to take focus back on exit
+  useEffect(() => {
+    const refocus = () => inputRef.current?.focus();
+    window.addEventListener("nizamos:focus-input", refocus);
+    return () => window.removeEventListener("nizamos:focus-input", refocus);
+  }, []);
+
   const execute = useCallback(
     (raw: string) => {
       const trimmed = raw.trim();
@@ -93,7 +99,6 @@ export default function Terminal() {
             },
           ]);
         } else if (trimmed) {
-          const reply = aiReply(trimmed);
           setHistory((h) => [
             ...h,
             {
@@ -104,7 +109,7 @@ export default function Terminal() {
                 <div className="flex gap-2">
                   <span className="text-cyanx glow-cyan shrink-0">niz.ai ▸</span>
                   <span className="text-phos-dim">
-                    <TypeWriter text={reply} />
+                    <AIReply message={trimmed} />
                   </span>
                 </div>
               ),
