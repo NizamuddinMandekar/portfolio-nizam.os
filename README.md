@@ -17,7 +17,6 @@ Boot the OS, log in as root, and explore my work the way engineers do through a 
 | `chat` | talk to **NIZ.AI**, a simulated me |
 | `open askallen` | jump straight to a live project |
 | `theme cyan` | switch the phosphor color (green / cyan / amber) |
-| `snake` | yes, it's playable |
 | `matrix` | follow the white rabbit |
 | `sudo hire-me` | 🔓 |
 

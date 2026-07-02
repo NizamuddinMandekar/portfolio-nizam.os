@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import RotatingGreeting from "../components/RotatingGreeting";
-import Snake from "../components/Snake";
 import { sound } from "./sound";
 import {
   education,
@@ -94,7 +93,6 @@ const COMMAND_LIST: [string, string][] = [
   ["theme", "switch color: green | cyan | amber"],
   ["sound", "toggle sfx: sound on | off"],
   ["matrix", "follow the white rabbit"],
-  ["snake", "play snake in the terminal"],
   ["history", "your recent commands"],
   ["clear", "wipe the screen"],
 ];
@@ -409,9 +407,6 @@ export function runCommand(raw: string): CommandResult {
         ),
       };
     }
-
-    case "snake":
-      return { output: <Snake /> };
 
     case "date":
       return {

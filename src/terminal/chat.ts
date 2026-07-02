@@ -18,6 +18,13 @@ const RULES: Rule[] = [
     ],
   },
   {
+    keywords: ["who built you", "who builded you", "who made you", "who created you", "created you", "your creator", "your maker", "who wrote you"],
+    replies: [
+      "Nizam built me, obviously. I'm the small demo; his real chatbots do RAG over 43,000+ resumes and serve government citizens in 3 languages. Ask me about those.",
+      "My creator is Nizamuddin Mandekar AI engineer, RAG specialist, and the reason I exist without a single API key. Ask me about his work.",
+    ],
+  },
+  {
     keywords: ["project", "build", "built", "work on", "portfolio"],
     replies: [
       "Nizam's favorite build is AskAllen a RAG chatbot searching 43,000+ resumes with vector embeddings. He also built an AI Image Detector (92%+ accuracy, published research) and QuizBuddy, a real-time multiplayer quiz platform. Type `projects` for the full list.",
