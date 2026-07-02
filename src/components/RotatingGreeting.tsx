@@ -19,13 +19,13 @@ export default function RotatingGreeting() {
         setIndex((i) => (i + 1) % GREETINGS.length);
         setFading(false);
       }, 200);
-    }, 1500);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <span
-      className={`text-cyanx inline-block min-w-[7.5rem] transition-opacity duration-200 ${
+      className={`text-cyanx inline-block transition-opacity duration-200 ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
