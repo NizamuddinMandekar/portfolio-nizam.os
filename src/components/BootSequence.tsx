@@ -27,12 +27,22 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
     }
     const advance = () => setVisible((v) => Math.min(v + 1, BOOT_LINES.length));
     const interval = setInterval(advance, 240);
-    window.addEventListener("keydown", advance);
-    window.addEventListener("pointerdown", advance);
+
+    // one line per distinct press — ignore key auto-repeat, throttle to 90ms
+    let lastPress = 0;
+    const onPress = (e: KeyboardEvent | PointerEvent) => {
+      if ("repeat" in e && e.repeat) return;
+      const now = performance.now();
+      if (now - lastPress < 90) return;
+      lastPress = now;
+      advance();
+    };
+    window.addEventListener("keydown", onPress);
+    window.addEventListener("pointerdown", onPress);
     return () => {
       clearInterval(interval);
-      window.removeEventListener("keydown", advance);
-      window.removeEventListener("pointerdown", advance);
+      window.removeEventListener("keydown", onPress);
+      window.removeEventListener("pointerdown", onPress);
     };
   }, []);
 
