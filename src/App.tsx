@@ -48,8 +48,19 @@ export default function App() {
           <main className="relative z-10 flex-1 min-h-0 flex flex-col items-center px-4 py-4">
             <Terminal />
             <p className="mt-3 text-sm text-faint text-center max-w-xl shrink-0">
-              tip: try <span className="text-phos">sudo hire-me</span> · tab
-              autocompletes · ctrl+L clears
+              tip: try{" "}
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent("nizamos:run-command", { detail: "sudo hire-me" })
+                  )
+                }
+                className="text-phos underline decoration-phos/40 underline-offset-4 hover:decoration-phos hover:glow transition-all cursor-pointer"
+              >
+                sudo hire-me
+              </button>{" "}
+              · tab autocompletes · ctrl+L clears
             </p>
           </main>
           <footer className="relative z-10 shrink-0 border-t border-linex py-4 text-center text-base text-faint">

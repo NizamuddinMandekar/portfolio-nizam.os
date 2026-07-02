@@ -77,6 +77,7 @@ export default function Terminal() {
     return () => window.removeEventListener("nizamos:focus-input", refocus);
   }, []);
 
+
   const execute = useCallback(
     (raw: string) => {
       const trimmed = raw.trim();
@@ -141,6 +142,19 @@ export default function Terminal() {
     },
     [chatMode]
   );
+
+  // external UI (tip line, etc.) can run a command in this terminal
+  useEffect(() => {
+    const run = (e: Event) => {
+      const cmd = (e as CustomEvent<string>).detail;
+      if (typeof cmd === "string") {
+        execute(cmd);
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("nizamos:run-command", run);
+    return () => window.removeEventListener("nizamos:run-command", run);
+  }, [execute]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key.length === 1 || e.key === "Backspace") {
