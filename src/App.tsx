@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import BootSequence from "./components/BootSequence";
 import MatrixRain from "./components/MatrixRain";
+import Screensaver from "./components/Screensaver";
 import Terminal from "./components/Terminal";
 import TopBar from "./components/TopBar";
 import { profile } from "./data/portfolio";
@@ -85,6 +86,8 @@ export default function App() {
           </footer>
         </>
       )}
+
+      {booted && !shutdown && <Screensaver />}
 
       {godMode && (
         <div className="god-toast fixed top-20 left-1/2 -translate-x-1/2 z-[70] border border-phos/60 bg-crt/95 px-6 py-3 text-phos glow text-lg">

@@ -19,16 +19,25 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
   const [finished, setFinished] = useState(false);
   const doneRef = useRef(false);
 
-  // timer + keypress both advance the same counter
+  const [poweredOn, setPoweredOn] = useState(false);
+
+  // lines start after the CRT power-on flash
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPoweredOn(true);
       setVisible(BOOT_LINES.length);
       return;
     }
+    const powerTimer = setTimeout(() => setPoweredOn(true), 550);
+    return () => clearTimeout(powerTimer);
+  }, []);
+
+  useEffect(() => {
+    if (!poweredOn || visible >= BOOT_LINES.length) return;
     const advance = () => setVisible((v) => Math.min(v + 1, BOOT_LINES.length));
     const interval = setInterval(advance, 240);
     return () => clearInterval(interval);
-  }, []);
+  }, [poweredOn, visible]);
 
   // once every line is on screen, wait for a key/tap to enter
   const ready = visible >= BOOT_LINES.length;
@@ -56,6 +65,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
           transition={{ duration: 0.4 }}
           className="fixed inset-0 z-[100] bg-crt flex items-center justify-center px-6"
         >
+          {!poweredOn && <div className="crt-on-line" />}
           <div className="w-full max-w-xl text-sm">
             {BOOT_LINES.slice(0, visible).map((line, i) => (
               <p key={i} className="text-phos glow leading-loose">

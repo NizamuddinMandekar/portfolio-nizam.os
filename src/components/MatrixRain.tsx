@@ -5,6 +5,16 @@ const GLYPHS = "01アイウエオカキクケコサシスセソタチツ<>[]{}$#
 export default function MatrixRain() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const takeover = useRef(false);
+  const surgeAt = useRef(0);
+
+  // commands make the rain surge briefly, like the system is computing
+  useEffect(() => {
+    const onActivity = () => {
+      surgeAt.current = performance.now();
+    };
+    window.addEventListener("nizamos:activity", onActivity);
+    return () => window.removeEventListener("nizamos:activity", onActivity);
+  }, []);
 
   useEffect(() => {
     const onTakeover = () => {
@@ -48,7 +58,8 @@ export default function MatrixRain() {
     let last = 0;
     const draw = (t: number) => {
       raf = requestAnimationFrame(draw);
-      if (t - last < (takeover.current ? 25 : 33)) return; // ~30fps normally, faster in takeover
+      const surging = t - surgeAt.current < 800;
+      if (t - last < (takeover.current ? 25 : surging ? 22 : 33)) return;
       last = t;
 
       ctx.fillStyle = "rgba(3, 7, 9, 0.12)";
@@ -56,10 +67,11 @@ export default function MatrixRain() {
       ctx.font = `${fontSize}px "JetBrains Mono", monospace`;
 
       const theme = document.documentElement.dataset.theme;
+      const alpha = surging ? "0.5" : "0.34";
       const body =
-        theme === "cyan" ? "rgba(53,216,255,0.34)"
-        : theme === "amber" ? "rgba(255,179,71,0.34)"
-        : "rgba(46,232,138,0.34)";
+        theme === "cyan" ? `rgba(53,216,255,${alpha})`
+        : theme === "amber" ? `rgba(255,179,71,${alpha})`
+        : `rgba(46,232,138,${alpha})`;
       const spark =
         theme === "amber" ? "rgba(56,225,255,0.5)" : "rgba(255,200,87,0.5)";
 

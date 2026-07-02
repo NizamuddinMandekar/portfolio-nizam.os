@@ -40,7 +40,7 @@ const Link = ({ href, children }: { href: string; children: ReactNode }) => (
     href={href}
     target={href.startsWith("mailto") ? undefined : "_blank"}
     rel="noopener noreferrer"
-    className="text-cyanx underline decoration-cyanx/40 underline-offset-4 hover:text-white hover:decoration-white transition-colors cursor-pointer"
+    className="link-scan text-cyanx underline decoration-cyanx/40 underline-offset-4 hover:text-white hover:decoration-white transition-colors cursor-pointer"
   >
     {children}
   </a>

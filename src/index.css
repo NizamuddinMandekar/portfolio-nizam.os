@@ -121,6 +121,7 @@ body {
   vertical-align: text-bottom;
   animation: blink 1s step-end infinite;
   box-shadow: 0 0 8px rgba(var(--glow-rgb), 0.7);
+  transition: left 70ms linear; /* cursor smear when typing */
 }
 
 /* terminal window chrome */
@@ -132,6 +133,91 @@ body {
     0 0 40px rgba(var(--glow-rgb), 0.08),
     0 24px 80px rgba(0, 0, 0, 0.7);
 }
+
+/* ── animation pack ──────────────────────────────────────── */
+
+/* output lines cascade in like streamed terminal output */
+@keyframes line-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger > * { animation: line-in 0.22s ease-out both; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(6) { animation-delay: 200ms; }
+.stagger > *:nth-child(7) { animation-delay: 240ms; }
+.stagger > *:nth-child(8) { animation-delay: 280ms; }
+.stagger > *:nth-child(n + 9) { animation-delay: 320ms; }
+
+/* phosphor burn-in: cleared output fades with green afterglow */
+@keyframes phosphor-out {
+  0% { opacity: 0.8; filter: none; }
+  100% { opacity: 0; filter: blur(3px) brightness(1.6); }
+}
+.phosphor-fade {
+  animation: phosphor-out 0.7s ease-out forwards;
+  pointer-events: none;
+}
+
+/* screen wobble on command execution */
+@keyframes crt-wobble {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-1.5px); }
+  50% { transform: translateY(1px); }
+  75% { transform: translateY(-0.5px); }
+  100% { transform: translateY(0); }
+}
+.wobble { animation: crt-wobble 0.16s linear; }
+
+/* dock chip glow sweep + click flash */
+.chip { position: relative; overflow: hidden; }
+.chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(var(--glow-rgb), 0.28) 50%, transparent 65%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+@keyframes chip-sweep {
+  to { transform: translateX(130%); }
+}
+.chip:hover::after { animation: chip-sweep 0.55s ease-out forwards; }
+.chip:active { background: rgba(var(--glow-rgb), 0.18); }
+
+/* link hover scanline */
+@keyframes scan-sweep {
+  from { background-position: -100% 0; }
+  to { background-position: 200% 0; }
+}
+.link-scan:hover {
+  background-image: linear-gradient(90deg, transparent, rgba(var(--glow-rgb), 0.22), transparent);
+  background-size: 60% 100%;
+  background-repeat: no-repeat;
+  animation: scan-sweep 0.5s linear;
+}
+
+/* recording-style heartbeat for status dots */
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; text-shadow: 0 0 6px rgba(var(--glow-rgb), 0.8); }
+  50% { opacity: 0.35; text-shadow: 0 0 2px rgba(var(--glow-rgb), 0.3); }
+}
+.pulse-dot { animation: dot-pulse 1.6s ease-in-out infinite; }
+
+/* idle screensaver: DVD-style bounce via two alternating axes */
+@keyframes dvd-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100vw - 16rem)); }
+}
+@keyframes dvd-y {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(100dvh - 6rem)); }
+}
+.dvd-x { animation: dvd-x 7.3s linear infinite alternate; width: 16rem; }
+.dvd-y { animation: dvd-y 5.1s linear infinite alternate; }
 
 /* glitch effect (the `glitch` command) */
 @keyframes glitch-jitter {
@@ -148,6 +234,20 @@ body {
 }
 .glitch-fx {
   animation: glitch-jitter 0.25s steps(2) 8;
+}
+
+/* CRT power-on (boot start): screen expands from a bright line */
+@keyframes crt-on {
+  0% { transform: scaleY(0.004); opacity: 1; filter: brightness(3); }
+  55% { transform: scaleY(0.004); opacity: 1; filter: brightness(3); }
+  100% { transform: scaleY(1); opacity: 0; filter: brightness(1); }
+}
+.crt-on-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(234, 255, 243, 0.9), rgba(var(--glow-rgb), 0.6));
+  animation: crt-on 0.55s ease-out forwards;
+  pointer-events: none;
 }
 
 /* CRT power-off (the `shutdown` command) */

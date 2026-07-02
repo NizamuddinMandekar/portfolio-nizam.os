@@ -62,10 +62,22 @@ export default function Terminal() {
   });
   const [histIndex, setHistIndex] = useState(-1);
   const [chatMode, setChatMode] = useState(false);
+  const [ghost, setGhost] = useState<HistoryEntry[] | null>(null);
+  const [wobble, setWobble] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const tourTimer = useRef<number | null>(null);
+  const historyRef = useRef<HistoryEntry[]>([]);
+  historyRef.current = history;
+  const typingRef = useRef(false);
+
+  // phosphor afterglow: cleared output fades instead of vanishing
+  const clearWithGhost = () => {
+    setGhost(historyRef.current);
+    setHistory([]);
+    window.setTimeout(() => setGhost(null), 750);
+  };
 
   const stopTour = () => {
     if (tourTimer.current !== null) {
@@ -129,7 +141,7 @@ export default function Terminal() {
         const result = runCommand(trimmed);
         if (result.enterChat) setChatMode(true);
         if (result.clear) {
-          setHistory([]);
+          clearWithGhost();
         } else if (result.output !== null || trimmed) {
           setHistory((h) => [
             ...h,
@@ -157,6 +169,10 @@ export default function Terminal() {
           localStorage.setItem("nizamos-history", JSON.stringify(next));
           return next;
         });
+        // pulse the matrix rain + wobble the screen like the beam resyncing
+        window.dispatchEvent(new CustomEvent("nizamos:activity"));
+        setWobble(true);
+        window.setTimeout(() => setWobble(false), 180);
       }
       setHistIndex(-1);
       setInput("");
@@ -164,18 +180,42 @@ export default function Terminal() {
     [chatMode]
   );
 
+  // dock clicks type the command out character-by-character before running
+  const typeAndRun = useCallback(
+    (cmd: string) => {
+      if (typingRef.current) return;
+      stopTour();
+      typingRef.current = true;
+      let i = 0;
+      const iv = window.setInterval(() => {
+        i++;
+        setInput(cmd.slice(0, i));
+        sound.key();
+        if (i >= cmd.length) {
+          clearInterval(iv);
+          window.setTimeout(() => {
+            typingRef.current = false;
+            sound.enter();
+            execute(cmd);
+          }, 140);
+        }
+      }, 30);
+    },
+    [execute]
+  );
+
   // external UI (tip line, etc.) can run a command in this terminal
   useEffect(() => {
     const run = (e: Event) => {
       const cmd = (e as CustomEvent<string>).detail;
       if (typeof cmd === "string") {
-        execute(cmd);
+        typeAndRun(cmd);
         inputRef.current?.focus();
       }
     };
     window.addEventListener("nizamos:run-command", run);
     return () => window.removeEventListener("nizamos:run-command", run);
-  }, [execute]);
+  }, [typeAndRun]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     stopTour(); // any manual input takes the wheel back
@@ -203,7 +243,7 @@ export default function Terminal() {
       if (match && input) setInput(match);
     } else if (e.key === "l" && e.ctrlKey) {
       e.preventDefault();
-      setHistory([]);
+      clearWithGhost();
     }
   };
 
@@ -212,7 +252,7 @@ export default function Terminal() {
       initial={{ opacity: 0, y: 24, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-      className="term-window rounded-lg overflow-hidden w-full max-w-4xl mx-auto flex flex-col flex-1 min-h-0"
+      className={`term-window rounded-lg overflow-hidden w-full max-w-4xl mx-auto flex flex-col flex-1 min-h-0 ${wobble ? "wobble" : ""}`}
       onClick={() => inputRef.current?.focus()}
     >
       {/* title bar */}
@@ -225,7 +265,9 @@ export default function Terminal() {
         <p className="text-sm text-faint">
           root@nizam.os /portfolio 80×24
         </p>
-        <p className="text-sm text-phos glow hidden sm:block">● LIVE</p>
+        <p className="text-sm text-phos glow hidden sm:block">
+          <span className="pulse-dot inline-block">●</span> LIVE
+        </p>
       </div>
 
       {/* scrollback */}
@@ -233,6 +275,21 @@ export default function Terminal() {
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 text-[0.95rem] sm:text-base"
       >
+        {ghost && (
+          <div className="phosphor-fade space-y-4" aria-hidden="true">
+            {ghost.map((entry) => (
+              <div key={`g-${entry.id}`}>
+                {entry.command !== null && (
+                  <div className="flex gap-2 flex-wrap">
+                    <span>{entry.chat ? CHAT_PROMPT : PROMPT}</span>
+                    <span className="text-phos">{entry.command}</span>
+                  </div>
+                )}
+                {entry.output && <div className="mt-2">{entry.output}</div>}
+              </div>
+            ))}
+          </div>
+        )}
         {history.map((entry) => (
           <div key={entry.id}>
             {entry.command !== null && (
@@ -241,7 +298,7 @@ export default function Terminal() {
                 <span className="text-phos glow">{entry.command}</span>
               </div>
             )}
-            {entry.output && <div className="mt-2">{entry.output}</div>}
+            {entry.output && <div className="mt-2 stagger">{entry.output}</div>}
           </div>
         ))}
 
@@ -277,11 +334,10 @@ export default function Terminal() {
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              stopTour();
-              execute(c);
+              typeAndRun(c);
               inputRef.current?.focus();
             }}
-            className="text-sm px-3 py-1.5 border border-linex text-phos-dim hover:text-phos hover:border-phos/60 hover:bg-phos/5 transition-colors duration-150 cursor-pointer"
+            className="chip text-sm px-3 py-1.5 border border-linex text-phos-dim hover:text-phos hover:border-phos/60 hover:bg-phos/5 transition-colors duration-150 cursor-pointer"
           >
             {c}
           </button>

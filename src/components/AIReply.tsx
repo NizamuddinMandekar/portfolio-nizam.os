@@ -31,7 +31,7 @@ function Linkified({ text }: { text: string }) {
               href={href}
               target={isEmail ? undefined : "_blank"}
               rel="noopener noreferrer"
-              className="text-cyanx underline decoration-cyanx/40 underline-offset-4 hover:text-white transition-colors cursor-pointer"
+              className="link-scan text-cyanx underline decoration-cyanx/40 underline-offset-4 hover:text-white transition-colors cursor-pointer"
             >
               {part}
             </a>
