@@ -45,6 +45,28 @@ export const sound = {
   error() {
     blip(160, 0.12, 0.06, "sawtooth");
   },
+  welcome() {
+    // spoken greeting on entering the OS recorded clip, speech synth as fallback
+    if (muted) return;
+    const clip = new Audio(import.meta.env.BASE_URL + "greet.mp3");
+    clip.volume = 1;
+    clip.play().catch(() => {
+      if (!("speechSynthesis" in window)) return;
+      const utter = new SpeechSynthesisUtterance("Hi. Welcome to Nizam's era.");
+      utter.rate = 0.88;
+      utter.pitch = 0.85;
+      utter.volume = 1;
+      const voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("en"));
+      const preferred =
+        voices.find((v) => /aria|jenny|sonia|libby/i.test(v.name)) ??
+        voices.find((v) => /zira|hazel|susan|catherine/i.test(v.name)) ??
+        voices.find((v) => /female|samantha|karen|tessa|moira|fiona|veena/i.test(v.name)) ??
+        voices[0];
+      if (preferred) utter.voice = preferred;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utter);
+    });
+  },
   isMuted() {
     return muted;
   },

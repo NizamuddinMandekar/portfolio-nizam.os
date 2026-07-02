@@ -1,5 +1,5 @@
 /**
- * NIZAM.OS social worker — guestbook + live presence.
+ * NIZAM.OS social worker guestbook + live presence.
  * Deploy: npx wrangler deploy --config worker/wrangler-social.jsonc
  */
 

@@ -1,6 +1,7 @@
 node_modules
 dist
 *.local
+tsconfig.tsbuildinfo
 .DS_Store
 
 # local source resumes (public/ copy is the published one)

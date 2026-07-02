@@ -15,7 +15,7 @@ Boot the OS, log in as root, and explore my work the way engineers do through a 
 | `help` | list everything |
 | `about` / `projects` / `experience` / `skills` / `research` | my work, rendered as terminal output |
 | `chat` | talk to **NIZ.AI**, a simulated me |
-| `tour` | sit back — the terminal drives itself |
+| `tour` | sit back the terminal drives itself |
 | `ls` / `cd projects` / `cat askallen.md` | browse my work as a filesystem |
 | `projects \| grep rag` | yes, piping works |
 | `posts` / `read rag-at-scale` | my blog, in the terminal |

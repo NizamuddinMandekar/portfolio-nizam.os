@@ -34,7 +34,7 @@ export default function Screensaver() {
         </div>
       </div>
       <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-faint text-sm">
-        system idle — press any key to resume
+        system idle press any key to resume
       </p>
     </div>
   );

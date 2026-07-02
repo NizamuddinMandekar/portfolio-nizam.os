@@ -59,7 +59,7 @@ export default function GitHubStats() {
   if (stats === "error") {
     return (
       <span className="text-alert">
-        github api unreachable (rate limit?) — try github.com/{USER} directly
+        github api unreachable (rate limit?) try github.com/{USER} directly
       </span>
     );
   }

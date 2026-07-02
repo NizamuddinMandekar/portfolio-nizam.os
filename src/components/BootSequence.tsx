@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { sound } from "../terminal/sound";
 
 const BOOT_LINES = [
   "NIZAM.OS v2.6 bootloader",
@@ -20,6 +21,11 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
   const doneRef = useRef(false);
 
   const [poweredOn, setPoweredOn] = useState(false);
+
+  // warm up the speech voices list (Chrome loads it async)
+  useEffect(() => {
+    if ("speechSynthesis" in window) speechSynthesis.getVoices();
+  }, []);
 
   // lines start after the CRT power-on flash
   useEffect(() => {
@@ -46,6 +52,7 @@ export default function BootSequence({ onDone }: { onDone: () => void }) {
     const enter = () => {
       if (doneRef.current) return;
       doneRef.current = true;
+      sound.welcome();
       setFinished(true);
       onDone();
     };

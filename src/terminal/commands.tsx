@@ -92,7 +92,7 @@ const COMMAND_LIST: [string, string][] = [
   ["research", "published papers"],
   ["education", "degrees & certifications"],
   ["chat", "talk to NIZ.AI a simulated me"],
-  ["tour", "sit back — auto-guided walkthrough"],
+  ["tour", "sit back auto-guided walkthrough"],
   ["posts", "read my blog posts"],
   ["stats", "live GitHub stats"],
   ["testimonials", "what people say"],
@@ -137,17 +137,17 @@ function textLines(cmd: string): string[] | null {
   switch (cmd) {
     case "projects":
       return projects.map(
-        (p) => `${p.title} — ${p.subtitle} :: ${p.tags.join(", ")}`
+        (p) => `${p.title} ${p.subtitle} :: ${p.tags.join(", ")}`
       );
     case "skills":
       return skillGroups.flatMap((g) => g.skills.map((s) => `${g.title} :: ${s}`));
     case "experience":
       return experience.flatMap((j) => j.points.map((pt) => `${j.company} :: ${pt}`));
     case "posts":
-      return posts.map((p) => `${p.slug} — ${p.title}`);
+      return posts.map((p) => `${p.slug} ${p.title}`);
     case "help":
     case "ls":
-      return COMMAND_LIST.map(([c, d]) => `${c} — ${d}`);
+      return COMMAND_LIST.map(([c, d]) => `${c} ${d}`);
     default:
       return null;
   }
@@ -285,7 +285,7 @@ export function runCommand(raw: string): CommandResult {
         output: (
           <Line>
             <span className="text-phos glow">auto-tour engaged.</span>{" "}
-            <Dim>sit back — I'll drive. type anything to take the wheel.</Dim>
+            <Dim>sit back I'll drive. type anything to take the wheel.</Dim>
           </Line>
         ),
       };
@@ -295,7 +295,7 @@ export function runCommand(raw: string): CommandResult {
         output: (
           <div className="space-y-1">
             <Line>
-              <Dim>~/blog — {posts.length} posts · read with</Dim> <Key>read &lt;slug&gt;</Key>
+              <Dim>~/blog {posts.length} posts · read with</Dim> <Key>read &lt;slug&gt;</Key>
             </Line>
             {posts.map((p) => (
               <Line key={p.slug}>
@@ -357,7 +357,7 @@ export function runCommand(raw: string): CommandResult {
               <div key={t.quote} className="border-l-2 border-cyanx/40 pl-4">
                 <p className="text-phos-dim leading-relaxed">"{t.quote}"</p>
                 <Line>
-                  <Key>— {t.author}</Key> <Dim>· {t.org}</Dim>
+                  <Key>{t.author}</Key> <Dim>· {t.org}</Dim>
                 </Line>
               </div>
             ))}

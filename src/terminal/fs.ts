@@ -10,7 +10,7 @@ const dir = (children: Record<string, VNode>): VNode => ({ type: "dir", children
 function projectFile(i: number): string {
   const p = projects[i];
   return [
-    `# ${p.title} — ${p.subtitle}`,
+    `# ${p.title} ${p.subtitle}`,
     "",
     p.description,
     "",
@@ -23,7 +23,7 @@ function projectFile(i: number): string {
 }
 
 export const ROOT: VNode = dir({
-  "about.txt": file(`${profile.name} — ${profile.role}\n\n${profile.summary}`),
+  "about.txt": file(`${profile.name} ${profile.role}\n\n${profile.summary}`),
   "contact.txt": file(
     `email: ${profile.email}\nphone: ${profile.phone}\ngithub: ${profile.github}\nlinkedin: ${profile.linkedin}\nlocation: ${profile.location}`
   ),

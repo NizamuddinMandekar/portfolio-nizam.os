@@ -15,7 +15,7 @@ export function SignResult({ message }: { message: string }) {
       </span>
     );
   if (state === "fail")
-    return <span className="text-alert">guestbook unreachable — try again later.</span>;
+    return <span className="text-alert">guestbook unreachable try again later.</span>;
   return (
     <span>
       <span className="text-phos glow">signed.</span>{" "}
@@ -41,7 +41,7 @@ export function GuestbookList() {
       </span>
     );
   if (entries === "error")
-    return <span className="text-alert">guestbook unreachable — try again later.</span>;
+    return <span className="text-alert">guestbook unreachable try again later.</span>;
   if (entries.length === 0)
     return (
       <span className="text-faint">
