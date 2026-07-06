@@ -40,6 +40,20 @@ const CHAT_STARTERS = [
   "pitch him in one tweet",
 ];
 
+// saying goodbye in chat ends the session with a random sign-off
+const FAREWELL_RE =
+  /\b(b+ye+|bbye+|goodbye|good\s?night|see\s?(ya|you)|gtg|g2g|tata|ciao|cya|khuda\s?hafiz|alvida|done for the day|i'?m done|talk later)\b/i;
+
+const CHAT_FAREWELLS = [
+  "exit code 0 — clean shutdown, zero segfaults. Nizam's inbox runs 24/7 though: type hire anytime.",
+  "connection closed by remote human. cache flushed, feelings persisted to disk. come back soon!",
+  "farewell, visitor. I'll be here idling at 0% CPU, dreaming of vector embeddings.",
+  "session terminated gracefully. remember: RAM is temporary, but Nizam's resume is forever. type resume.",
+  "goodbye! I'd wave, but my only peripheral is a blinking cursor.",
+  "logging you out… done. fun stat: you cost exactly $0 in API calls. Nizam optimizes everything.",
+  "shutting down chat… saving state… just kidding, I'm stateless. like all great conversations.",
+];
+
 const CHAT_PROMPT = (
   <>
     <span className="text-cyanx">you</span>
@@ -123,7 +137,30 @@ export default function Terminal() {
       const trimmed = raw.trim();
 
       if (chatMode) {
-        if (trimmed.toLowerCase() === "exit") {
+        if (trimmed && trimmed.toLowerCase() !== "exit" && FAREWELL_RE.test(trimmed)) {
+          setChatMode(false);
+          const signOff = CHAT_FAREWELLS[Math.floor(Math.random() * CHAT_FAREWELLS.length)];
+          setHistory((h) => [
+            ...h,
+            {
+              id: entryId++,
+              command: trimmed,
+              chat: true,
+              output: (
+                <div>
+                  <div className="flex gap-2">
+                    <span className="text-cyanx glow-cyan shrink-0">niz.ai ▸</span>
+                    <span className="text-phos-dim">{signOff}</span>
+                  </div>
+                  <span className="text-faint">
+                    NIZ.AI session closed. back to shell type{" "}
+                    <span className="text-cyanx">help</span> for commands.
+                  </span>
+                </div>
+              ),
+            },
+          ]);
+        } else if (trimmed.toLowerCase() === "exit") {
           setChatMode(false);
           setHistory((h) => [
             ...h,
