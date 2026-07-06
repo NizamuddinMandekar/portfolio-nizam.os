@@ -30,6 +30,16 @@ const DOCK_COMMANDS = [
   "neofetch",
 ];
 
+// funny techy conversation starters shown in the dock while chatting
+const CHAT_STARTERS = [
+  "sudo hire nizam",
+  "explain rag like i'm 5",
+  "is he better than chatgpt?",
+  "roast his tech stack",
+  "does he dream in python?",
+  "pitch him in one tweet",
+];
+
 const CHAT_PROMPT = (
   <>
     <span className="text-cyanx">you</span>
@@ -338,7 +348,7 @@ export default function Terminal() {
 
       {/* command dock */}
       <div className="border-t border-linex px-3 py-2.5 bg-black/40 flex flex-wrap gap-1.5">
-        {(chatMode ? ["exit"] : DOCK_COMMANDS).map((c) => (
+        {(chatMode ? [...CHAT_STARTERS, "exit"] : DOCK_COMMANDS).map((c) => (
           <button
             key={c}
             type="button"
