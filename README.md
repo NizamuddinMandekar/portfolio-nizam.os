@@ -2,7 +2,7 @@
 
 > The interactive terminal-OS portfolio of **Nizamuddin Mandekar**, AI Engineer.
 
-**Live: https://nizamuddinmandekar.github.io/nizam.os/**
+**Live: https://nizamuddinmandekar.github.io/portfolio-nizam.os/**
 
 ![NIZAM.OS preview](public/og.png)
 
