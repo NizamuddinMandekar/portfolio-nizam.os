@@ -20,11 +20,11 @@ interface HistoryEntry {
 
 const DOCK_COMMANDS = [
   "about",
+  "chat",
   "projects",
   "experience",
   "skills",
   "research",
-  "chat",
   "contact",
   "resume",
   "neofetch",
